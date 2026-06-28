@@ -1,0 +1,6 @@
+{
+  "name": "Study Timer & Planner",
+  "description": "A premium, feature-rich study timer and productivity planner with custom alarms, focus modes, offline support, multi-device cloud sync, detailed analytics, and AI study insights.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
