@@ -42,6 +42,7 @@ export interface PlannerTask {
   completed: boolean;
   notes?: string;
   colorTag: string; // hex or tailwind color class
+  targetHours?: number; // target hours for a study block (e.g. 2 hours)
   synced?: boolean;
 }
 
