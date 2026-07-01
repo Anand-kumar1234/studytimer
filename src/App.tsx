@@ -287,13 +287,41 @@ export default function App() {
     localStorage.setItem('study_tasks', JSON.stringify(updated));
 
     const updatedTask = updated.find(t => t.id === id);
-    if (user && updatedTask) {
-      try {
-        await updateDoc(doc(db, 'tasks', id), {
-          completed: updatedTask.completed
-        });
-      } catch (e) {
-        console.error(e);
+    if (updatedTask) {
+      // If a task with targetHours is completed, log a matching completed study session
+      if (updatedTask.completed && updatedTask.targetHours) {
+        const now = new Date();
+        const durationMin = Math.round(updatedTask.targetHours * 60);
+        const startTime = new Date(now.getTime() - durationMin * 60 * 1000);
+        const formatTimeStr = (d: Date) => d.toTimeString().split(' ')[0].substring(0, 5); // HH:MM
+
+        const newSession: StudySession = {
+          subject: updatedTask.subject,
+          chapter: updatedTask.title,
+          topic: updatedTask.notes || 'Target Grid Completion',
+          duration: durationMin,
+          actualTime: durationMin * 60, // in seconds
+          date: now.toISOString().split('T')[0],
+          startTime: formatTimeStr(startTime),
+          endTime: formatTimeStr(now),
+          sessionType: 'manual',
+          notes: `Completed Study Block: "${updatedTask.title}" (${updatedTask.targetHours} hours)!`,
+          mood: 'focused',
+          difficulty: updatedTask.priority === 'high' ? 'hard' : updatedTask.priority === 'medium' ? 'medium' : 'easy',
+          productivityRating: 5
+        };
+
+        await handleSaveSession(newSession);
+      }
+
+      if (user) {
+        try {
+          await updateDoc(doc(db, 'tasks', id), {
+            completed: updatedTask.completed
+          });
+        } catch (e) {
+          console.error(e);
+        }
       }
     }
   };
